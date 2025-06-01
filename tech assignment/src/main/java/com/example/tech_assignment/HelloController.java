@@ -43,40 +43,44 @@ public class HelloController {
 
     @FXML
 
+    //where tasks are saved/pulled from
     private final File taskFile = new File("tasks.txt");
 
     public void saveTasks(){
 
-        if (!taskFile.exists()){
+        if (!taskFile.exists()){ //if file dosent exist, logs in console and returns
             System.out.println("save file does not exist");
             return;
         }
 
+        //writes tasks from the list to the file line by line
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskFile))){
             for (String task : tasks){
                 writer.write(task);
                 writer.newLine();
             }
 
+        //avoids infinite runtime
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void loadTasks(){
-        if (!taskFile.exists()){
+    public void loadTasks(){ 
+        if (!taskFile.exists()){ //same as above
             System.out.println("save file does not exist");
             return;
         }
 
+        //loads tasks from txt file into list
         try (BufferedReader reader = new BufferedReader(new FileReader(taskFile))){
             String line;
             while ((line = reader.readLine()) != null){
                 tasks.add(line);
             }
 
-
+        //save as above
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -86,23 +90,24 @@ public class HelloController {
 
 
 
-    public void initialize() {
+    public void initialize() { 
 
-        tasks = FXCollections.observableArrayList();
-        loadTasks();
+        tasks = FXCollections.observableArrayList(); 
+        loadTasks(); 
         taskList.setItems(tasks);
 
+        //customize how each task is displayed
         taskList.setCellFactory(list -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
+                if (empty || item == null) { //checking if task actually exists
                     setText(null);
                     setStyle("");
                 } else {
                     setText(item);
                     if (item.startsWith("[✓] ")) {
-                        setStyle("-fx-text-fill: gray;");
+                        setStyle("-fx-text-fill: gray;"); //changing colors
                     } else {
                         setStyle("-fx-text-fill: black;");
                     }
@@ -168,7 +173,7 @@ public class HelloController {
         saveTasks();
     }
 
-    private void updateCount() {
+    private void updateCount() { //updates the current amount of tasks, called after every button action
         int count = tasks.size();
         taskCountLabel.setText(count + (count == 1 ? " task remaining" : " tasks remaining"));
     }
